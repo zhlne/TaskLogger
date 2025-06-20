@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-center">📋 任務清單</h2>
+
+<!-- 新增任務表單 -->
+<form method="post" class="row g-2 my-4">
+    <div class="col-md-5">
+        <input type="text" name="content" class="form-control" placeholder="請輸入任務內容">
+    </div>
+    <div class="col-md-4">
+        <select name="category" class="form-select">
+            <option value="">請選擇任務分類</option>
+            <option value="學習">學習</option>
+            <option value="工作">工作</option>
+            <option value="其他">其他</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-success w-100">新增任務</button>
+    </div>
+</form>
+
+<!-- 顯示任務清單 -->
+<ul class="list-group mb-4">
+{% for task in tasks %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            {% if task.is_done %}
+                ✅ <s>{{ task.content }}</s>
+            {% else %}
+                ⏳ {{ task.content }}
+            {% endif %}
+            <small class="text-muted ms-2">[{{ task.category or '未分類' }}]</small>
+        </div>
+        <a href="{{ url_for('complete', task_id=task.id) }}" class="btn btn-sm btn-outline-primary">標記完成</a>
+    </li>
+{% endfor %}
+</ul>
+
+<!-- 完成任務圓餅圖 -->
+<div style="width: 250px; height: 250px;" class="mx-auto mb-4">
+    <canvas id="chart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const completed = {{ completed|tojson }};
+    const pending = {{ pending|tojson }};
+    const total = completed + pending;
+    const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+    const centerText = {
+        id: 'centerText',
+        beforeDraw(chart) {
+            const { width, height } = chart;
+            const ctx = chart.ctx;
+            ctx.restore();
+            const fontSize = 18;
+            ctx.font = `${fontSize}px sans-serif`;
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#333';
+            ctx.fillText(`完成率 ${percent}%`, width / 2, height / 2);
+            ctx.save();
+        }
+    };
+
+    const ctx = document.getElementById('chart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['已完成', '未完成'],
+            datasets: [{
+                data: [completed, pending],
+                backgroundColor: ['#198754', '#dc3545'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        },
+        plugins: [centerText]
+    });
+</script>
+
+<!-- 登出按鈕 -->
+<div class="text-center">
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">登出</a>
+</div>
+{% endblock %}
