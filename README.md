@@ -35,6 +35,5 @@
 │   ├── base.html
 │   ├── dashboard.html
 │   ├── register.html
-│   └── login.html     # ✅ 新增：支援錯誤提示的登入畫面
-└── static/            # 可選：CSS 或圖片（目前未使用）
+│   └── login.html     # 支援錯誤提示的登入畫面
 ```
