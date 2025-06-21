@@ -32,8 +32,8 @@
 ├── init_db.py         # 資料庫初始化腳本
 ├── models.py          # 資料模型 User / Task
 ├── templates/
-│   ├── base.html
-│   ├── dashboard.html
-│   ├── register.html
-│   └── login.html     # 支援錯誤提示的登入畫面
+    ├── base.html
+    ├── dashboard.html
+    ├── register.html
+    └── login.html     # 支援錯誤提示的登入畫面
 ```
